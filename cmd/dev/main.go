@@ -3,15 +3,16 @@ package main
 import (
 	"fmt"
 	nc "go-nginx-conf"
+	c "go-nginx-conf/shortcut"
 )
 
 func main() {
 	directives := []nc.DirectiveInterface{
-		nc.SimpleDirective{
-			Name:    "least_conn",
-			Params:  nil,
-			Comment: nil,
-		},
+		c.Listen443SSLHTTP2,
+		c.Upstream(
+			"lea_@_www_jb1228_com_80",
+			nc.SimpleDirective{Name: "server", Params: []string{"35.200.43.88:80", "max_fails=1", "fail_timeout=10s"}},
+		),
 		nc.SimpleDirective{
 			Name:    "proxy_redirect",
 			Params:  []string{"off"},
