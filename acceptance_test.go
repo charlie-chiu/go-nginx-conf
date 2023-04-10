@@ -83,6 +83,29 @@ func TestGenerateIfDirective(t *testing.T) {
 	assertConfigEqual(t, expected, actual)
 }
 
+func TestGenerateLocationDirective(t *testing.T) {
+	expected := []byte(`location ~ /purge(/.*) {
+    proxy_cache_purge hqszone $host$1$is_args$args;
+}`)
+
+	config := go_nginx_conf.Config{
+		Directives: &go_nginx_conf.Block{Directives: []go_nginx_conf.DirectiveInterface{
+			c.Location(
+				c.P{"~ /purge(/.*)"},
+				go_nginx_conf.SimpleDirective{
+					Name:   "proxy_cache_purge",
+					Params: c.P{"hqszone", "$host$1$is_args$args"},
+				},
+			),
+		},
+		},
+	}
+
+	actual := go_nginx_conf.DumpConfig(config, go_nginx_conf.IndentedStyle)
+
+	assertConfigEqual(t, expected, actual)
+}
+
 func assertConfigEqual(t *testing.T, expected []byte, actual []byte) {
 	t.Helper()
 	if bytes.Compare(expected, actual) != 0 {
