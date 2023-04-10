@@ -59,10 +59,34 @@ func TestGenerateUpstream(t *testing.T) {
 	assertConfigEqual(t, expected, actual)
 }
 
+func TestGenerateIfDirective(t *testing.T) {
+	expected := []byte(
+		`if ($host = 'www.application.com') {
+    return 301 https://$host$request_uri;
+}`)
+
+	config := go_nginx_conf.Config{
+		Directives: &go_nginx_conf.Block{Directives: []go_nginx_conf.DirectiveInterface{
+			c.If(
+				"$host = 'www.application.com'",
+				go_nginx_conf.SimpleDirective{
+					Name:   "return",
+					Params: c.P{"301", "https://$host$request_uri"},
+				},
+			),
+		},
+		},
+	}
+
+	actual := go_nginx_conf.DumpConfig(config, go_nginx_conf.IndentedStyle)
+
+	assertConfigEqual(t, expected, actual)
+}
+
 func assertConfigEqual(t *testing.T, expected []byte, actual []byte) {
 	t.Helper()
 	if bytes.Compare(expected, actual) != 0 {
-		t.Logf("\nfailed to assert actual = expected\n")
+		t.Logf("\nfailed to assert actual equal expected\n")
 		t.Logf("expected:\n%s\n", expected)
 		t.Logf("actual:  \n%s\n", actual)
 		t.Fail()

@@ -1,6 +1,9 @@
 package shortcut
 
-import . "go-nginx-conf"
+import (
+	"fmt"
+	. "go-nginx-conf"
+)
 
 type P []string
 
@@ -44,5 +47,12 @@ func Location(parameters []string, directives ...DirectiveInterface) BlockDirect
 		Params: parameters,
 		Block:  &Block{directives},
 	}
+}
 
+func If(condition string, directives ...DirectiveInterface) BlockDirective {
+	return BlockDirective{
+		Name:   "if",
+		Params: []string{fmt.Sprintf("(%s)", condition)},
+		Block:  &Block{Directives: directives},
+	}
 }
