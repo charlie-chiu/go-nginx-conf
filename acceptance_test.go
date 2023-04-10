@@ -2,6 +2,7 @@ package go_nginx_conf_test
 
 import (
 	"bytes"
+	"fmt"
 	go_nginx_conf "go-nginx-conf"
 	c "go-nginx-conf/shortcut"
 	"io/ioutil"
@@ -31,6 +32,53 @@ func TestGenerateL1Conf(t *testing.T) {
 	actual := go_nginx_conf.DumpConfig(config, go_nginx_conf.IndentedStyle)
 
 	assertConfigEqual(t, expected, actual)
+}
+
+func TestGenerateSimpleDirective(t *testing.T) {
+	type testCase struct {
+		name   string
+		input  go_nginx_conf.SimpleDirective
+		output []byte
+	}
+
+	testCases := []testCase{
+		{
+			name: "listen 80",
+			input: go_nginx_conf.SimpleDirective{
+				Name:   "listen",
+				Params: c.P{"80"},
+			},
+			output: []byte("listen 80;"),
+		},
+		{
+			name: "custom error page",
+			input: go_nginx_conf.SimpleDirective{
+				Name:   "error_page",
+				Params: c.P{"497", "=307", "https://$host:$server_port$request_uri"},
+			},
+			output: []byte("error_page 497 =307 https://$host:$server_port$request_uri;"),
+		},
+		{
+			name: "set variable",
+			input: go_nginx_conf.SimpleDirective{
+				Name:   "set",
+				Params: c.P{"$origin_str", "34.96.119.139"},
+			},
+			output: []byte("set $origin_str 34.96.119.139;"),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("test simple directive: %q", tc.name), func(t *testing.T) {
+			actual := go_nginx_conf.DumpConfig(go_nginx_conf.Config{
+				Directives: &go_nginx_conf.Block{Directives: []go_nginx_conf.DirectiveInterface{
+					tc.input,
+				}},
+			}, go_nginx_conf.IndentedStyle)
+
+			assertConfigEqual(t, tc.output, actual)
+		})
+	}
 }
 
 func TestGenerateUpstream(t *testing.T) {
@@ -109,7 +157,7 @@ func TestGenerateLocationDirective(t *testing.T) {
 func assertConfigEqual(t *testing.T, expected []byte, actual []byte) {
 	t.Helper()
 	if bytes.Compare(expected, actual) != 0 {
-		t.Logf("\nfailed to assert actual equal expected\n")
+		t.Logf("failed to assert actual equal expected\n")
 		t.Logf("expected:\n%s\n", expected)
 		t.Logf("actual:  \n%s\n", actual)
 		t.Fail()
