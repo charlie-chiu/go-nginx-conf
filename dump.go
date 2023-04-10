@@ -56,7 +56,7 @@ func DumpConfig(config Config, style *Style) []byte {
 	return DumpBlock(config.Directives, style)
 }
 
-func DumpDirective(d DirectiveInterface, style *Style) []byte {
+func DumpDirective(d Directive, style *Style) []byte {
 	var buf bytes.Buffer
 
 	if style.SpaceBeforeBlocks && d.GetBlock() != nil {

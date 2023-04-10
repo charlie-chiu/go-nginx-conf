@@ -6,7 +6,7 @@ type Config struct {
 
 // how about least_conn; -> a directiveInterface without params
 
-type DirectiveInterface interface {
+type Directive interface {
 	GetName() string //the directive name.
 	GetParameters() []string
 	GetComment() []string
@@ -59,9 +59,9 @@ func (d BlockDirective) GetBlock() *Block {
 // ---
 
 type Block struct {
-	Directives []DirectiveInterface
+	Directives []Directive
 }
 
-func (b Block) GetDirectives() []DirectiveInterface {
+func (b Block) GetDirectives() []Directive {
 	return b.Directives
 }

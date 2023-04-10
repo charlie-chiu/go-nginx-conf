@@ -8,7 +8,7 @@ import (
 
 func main() {
 	config := nc.Config{
-		Directives: &nc.Block{Directives: []nc.DirectiveInterface{
+		Directives: &nc.Block{Directives: []nc.Directive{
 			c.Upstream("lea_@_www_jb1228_com_80",
 				nc.SimpleDirective{Name: "server", Params: c.P{"35.200.43.88:80", "max_fails=1", "fail_timeout=10s"}},
 			),

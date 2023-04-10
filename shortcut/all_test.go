@@ -9,7 +9,7 @@ import (
 func TestLocation(t *testing.T) {
 	type args struct {
 		parameters []string
-		directives []go_nginx_conf.DirectiveInterface
+		directives []go_nginx_conf.Directive
 	}
 	tests := []struct {
 		name string
@@ -29,7 +29,7 @@ func TestLocation(t *testing.T) {
 
 func TestServer(t *testing.T) {
 	type args struct {
-		directives []go_nginx_conf.DirectiveInterface
+		directives []go_nginx_conf.Directive
 	}
 	tests := []struct {
 		name string
@@ -67,7 +67,7 @@ func TestUpstream(t *testing.T) {
 			want: go_nginx_conf.BlockDirective{
 				Name:   "upstream",
 				Params: []string{"dummy_upstream"},
-				Block: &go_nginx_conf.Block{Directives: []go_nginx_conf.DirectiveInterface{
+				Block: &go_nginx_conf.Block{Directives: []go_nginx_conf.Directive{
 					go_nginx_conf.SimpleDirective{Name: "least_conn"},
 				}},
 			},

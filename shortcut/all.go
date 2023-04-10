@@ -6,6 +6,7 @@ import (
 )
 
 type P []string
+type SD SimpleDirective
 
 var (
 	Listen80          = SimpleDirective{Name: "listen", Params: []string{"80"}}
@@ -13,7 +14,7 @@ var (
 )
 
 func Upstream(upstream string, servers ...SimpleDirective) BlockDirective {
-	ups := make([]DirectiveInterface, len(servers))
+	ups := make([]Directive, len(servers))
 	for i, server := range servers {
 		ups[i] = SimpleDirective{
 			Name:   server.Name,
@@ -34,14 +35,14 @@ func Upstream(upstream string, servers ...SimpleDirective) BlockDirective {
 	}
 }
 
-func Server(directives ...DirectiveInterface) BlockDirective {
+func Server(directives ...Directive) BlockDirective {
 	return BlockDirective{
 		Name:  "server",
 		Block: &Block{directives},
 	}
 }
 
-func Location(parameters []string, directives ...DirectiveInterface) BlockDirective {
+func Location(parameters []string, directives ...Directive) BlockDirective {
 	return BlockDirective{
 		Name:   "location",
 		Params: parameters,
@@ -49,7 +50,7 @@ func Location(parameters []string, directives ...DirectiveInterface) BlockDirect
 	}
 }
 
-func If(condition string, directives ...DirectiveInterface) BlockDirective {
+func If(condition string, directives ...Directive) BlockDirective {
 	return BlockDirective{
 		Name:   "if",
 		Params: []string{fmt.Sprintf("(%s)", condition)},
