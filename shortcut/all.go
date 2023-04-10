@@ -14,7 +14,7 @@ var (
 )
 
 func Upstream(upstream string, servers ...SimpleDirective) BlockDirective {
-	ups := make([]Directive, len(servers))
+	ups := make(Block, len(servers))
 	for i, server := range servers {
 		ups[i] = SimpleDirective{
 			Name:   server.Name,
@@ -31,14 +31,14 @@ func Upstream(upstream string, servers ...SimpleDirective) BlockDirective {
 		Name:    "upstream",
 		Params:  []string{upstream},
 		Comment: nil,
-		Block:   &Block{Directives: ups},
+		Block:   ups,
 	}
 }
 
 func Server(directives ...Directive) BlockDirective {
 	return BlockDirective{
 		Name:  "server",
-		Block: &Block{directives},
+		Block: directives,
 	}
 }
 
@@ -46,7 +46,7 @@ func Location(parameters []string, directives ...Directive) BlockDirective {
 	return BlockDirective{
 		Name:   "location",
 		Params: parameters,
-		Block:  &Block{directives},
+		Block:  directives,
 	}
 }
 
@@ -54,6 +54,6 @@ func If(condition string, directives ...Directive) BlockDirective {
 	return BlockDirective{
 		Name:   "if",
 		Params: []string{fmt.Sprintf("(%s)", condition)},
-		Block:  &Block{Directives: directives},
+		Block:  directives,
 	}
 }

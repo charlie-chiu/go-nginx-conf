@@ -83,10 +83,10 @@ func DumpDirective(d Directive, style *Style) []byte {
 	//return []byte("dummy output of DumpDirective")
 }
 
-func DumpBlock(b *Block, style *Style) []byte {
+func DumpBlock(b Block, style *Style) []byte {
 	var buf bytes.Buffer
 
-	directives := b.GetDirectives()
+	directives := b
 	if style.SortDirectives {
 		sort.SliceStable(directives, func(i, j int) bool {
 			return directives[i].GetName() < directives[j].GetName()

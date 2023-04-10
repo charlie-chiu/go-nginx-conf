@@ -1,8 +1,11 @@
 package go_nginx_conf
 
+// Config represent nginx Configuration File
 type Config struct {
-	Directives *Block
+	Directives Block
 }
+
+type Block []Directive
 
 // how about least_conn; -> a directiveInterface without params
 
@@ -10,7 +13,7 @@ type Directive interface {
 	GetName() string //the directive name.
 	GetParameters() []string
 	GetComment() []string
-	GetBlock() *Block
+	GetBlock() Block
 }
 
 type SimpleDirective struct {
@@ -18,7 +21,7 @@ type SimpleDirective struct {
 	Params, Comment []string
 }
 
-func (d SimpleDirective) GetBlock() *Block {
+func (d SimpleDirective) GetBlock() Block {
 	return nil
 }
 
@@ -37,7 +40,7 @@ func (d SimpleDirective) GetComment() []string {
 type BlockDirective struct {
 	Name            string
 	Params, Comment []string
-	Block           *Block
+	Block           Block
 }
 
 func (d BlockDirective) GetName() string {
@@ -52,16 +55,6 @@ func (d BlockDirective) GetComment() []string {
 	return d.Comment
 }
 
-func (d BlockDirective) GetBlock() *Block {
+func (d BlockDirective) GetBlock() Block {
 	return d.Block
-}
-
-// ---
-
-type Block struct {
-	Directives []Directive
-}
-
-func (b Block) GetDirectives() []Directive {
-	return b.Directives
 }

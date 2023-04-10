@@ -8,7 +8,7 @@ import (
 
 func main() {
 	config := nc.Config{
-		Directives: &nc.Block{Directives: []nc.Directive{
+		Directives: []nc.Directive{
 			c.Upstream("lea_@_www_jb1228_com_80",
 				nc.SimpleDirective{Name: "server", Params: c.P{"35.200.43.88:80", "max_fails=1", "fail_timeout=10s"}},
 			),
@@ -25,7 +25,7 @@ func main() {
 				c.Location(c.P{"/"}, nc.SimpleDirective{Name: "proxy_pass", Params: c.P{"$scheme://lea_@_www_jb1228_com_443"}}),
 				c.Location(c.P{"/"}, nc.SimpleDirective{Name: "proxy_pass", Params: c.P{"$scheme://lea_@_www_jb1228_com_443"}}),
 			),
-		}},
+		},
 	}
 
 	fmt.Printf("%s\n", nc.DumpConfig(config, nc.IndentedStyle))

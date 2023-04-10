@@ -16,7 +16,7 @@ import (
 //	}
 //
 //	config := conf.Config{
-//		Directives: &conf.Block{Directives: []conf.Directive{
+//		Directives: &conf.Block{Directives: conf.Block{
 //			c.Upstream("lea_@_www_jb1228_com_80",
 //				conf.SimpleDirective{
 //					Name:   "server",
@@ -70,9 +70,9 @@ func TestGenerateSimpleDirective(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("test simple directive: %q", tc.name), func(t *testing.T) {
 			actual := conf.DumpConfig(conf.Config{
-				Directives: &conf.Block{Directives: []conf.Directive{
+				Directives: conf.Block{
 					tc.input,
-				}},
+				},
 			}, conf.IndentedStyle)
 
 			assertConfigEqual(t, tc.output, actual)
@@ -89,7 +89,7 @@ func TestGenerateUpstream(t *testing.T) {
 }`)
 
 	config := conf.Config{
-		Directives: &conf.Block{Directives: []conf.Directive{
+		Directives: conf.Block{
 			c.Upstream("lea_@_www_application_com_443",
 				conf.SimpleDirective{
 					Name:   "server",
@@ -99,7 +99,7 @@ func TestGenerateUpstream(t *testing.T) {
 					Name:   "server",
 					Params: c.P{"34.92.95.215:80", "max_fails=1", "fail_timeout=10s"},
 				},
-			)}},
+			)},
 	}
 	actual := conf.DumpConfig(config, conf.IndentedStyle)
 
@@ -113,16 +113,14 @@ func TestGenerateIfDirective(t *testing.T) {
 }`)
 
 	config := conf.Config{
-		Directives: &conf.Block{
-			Directives: []conf.Directive{
-				c.If(
-					"$host = 'www.application.com'",
-					conf.SimpleDirective{
-						Name:   "return",
-						Params: c.P{"301", "https://$host$request_uri"},
-					},
-				),
-			},
+		Directives: conf.Block{
+			c.If(
+				"$host = 'www.application.com'",
+				conf.SimpleDirective{
+					Name:   "return",
+					Params: c.P{"301", "https://$host$request_uri"},
+				},
+			),
 		},
 	}
 
@@ -137,15 +135,13 @@ func TestGenerateLocationDirective(t *testing.T) {
 }`)
 
 	config := conf.Config{
-		Directives: &conf.Block{Directives: []conf.Directive{
+		Directives: conf.Block{
 			c.Location(
 				c.P{"~ /purge(/.*)"},
 				conf.SimpleDirective{
-					Name:   "proxy_cache_purge",
-					Params: c.P{"hqszone", "$host$1$is_args$args"},
+					Name: "proxy_cache_purge", Params: c.P{"hqszone", "$host$1$is_args$args"},
 				},
 			),
-		},
 		},
 	}
 
