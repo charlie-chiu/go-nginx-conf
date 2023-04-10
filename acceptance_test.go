@@ -18,16 +18,53 @@ func TestGenerateL1Conf(t *testing.T) {
 	config := go_nginx_conf.Config{
 		Directives: &go_nginx_conf.Block{Directives: []go_nginx_conf.DirectiveInterface{
 			c.Upstream("lea_@_www_jb1228_com_80",
-				go_nginx_conf.SimpleDirective{Name: "server", Params: c.P{"35.200.43.88:80", "max_fails=1", "fail_timeout=10s"}},
+				go_nginx_conf.SimpleDirective{
+					Name:   "server",
+					Params: c.P{"35.200.43.88:80", "max_fails=1", "fail_timeout=10s"},
+				},
+				go_nginx_conf.SimpleDirective{
+					Name:   "server",
+					Params: c.P{"34.92.95.215:80", "max_fails=1", "fail_timeout=10s"},
+				},
 			)}},
 	}
 	actual := go_nginx_conf.DumpConfig(config, go_nginx_conf.IndentedStyle)
 
+	assertConfigEqual(t, expected, actual)
+}
+
+func TestGenerateUpstream(t *testing.T) {
+	expected := []byte(
+		`upstream lea_@_www_application_com_443 {
+    server 35.200.43.88:80 max_fails=1 fail_timeout=10s;
+    server 34.92.95.215:80 max_fails=1 fail_timeout=10s;
+    least_conn;
+}`)
+
+	config := go_nginx_conf.Config{
+		Directives: &go_nginx_conf.Block{Directives: []go_nginx_conf.DirectiveInterface{
+			c.Upstream("lea_@_www_application_com_443",
+				go_nginx_conf.SimpleDirective{
+					Name:   "server",
+					Params: c.P{"35.200.43.88:80", "max_fails=1", "fail_timeout=10s"},
+				},
+				go_nginx_conf.SimpleDirective{
+					Name:   "server",
+					Params: c.P{"34.92.95.215:80", "max_fails=1", "fail_timeout=10s"},
+				},
+			)}},
+	}
+	actual := go_nginx_conf.DumpConfig(config, go_nginx_conf.IndentedStyle)
+
+	assertConfigEqual(t, expected, actual)
+}
+
+func assertConfigEqual(t *testing.T, expected []byte, actual []byte) {
+	t.Helper()
 	if bytes.Compare(expected, actual) != 0 {
 		t.Logf("\nfailed to assert actual = expected\n")
 		t.Logf("expected:\n%s\n", expected)
 		t.Logf("actual:  \n%s\n", actual)
 		t.Fail()
 	}
-
 }
