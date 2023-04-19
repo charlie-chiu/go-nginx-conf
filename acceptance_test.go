@@ -19,43 +19,36 @@ func TestGenerateL1Conf(t *testing.T) {
 	config := conf.Config{
 		Directives: conf.Block{
 			c.Upstream("lea_@_www_application_com_443",
-				conf.SimpleDirective{
-					Name:   "server",
-					Params: c.P{"35.200.43.88:80", "max_fails=1", "fail_timeout=10s"},
-				},
-				conf.SimpleDirective{
-					Name:   "server",
-					Params: c.P{"34.92.95.215:80", "max_fails=1", "fail_timeout=10s"},
-				},
+				conf.SimpleDirective{Name: "server", Params: c.P{"35.200.43.88:80", "max_fails=1", "fail_timeout=10s"}},
+				conf.SimpleDirective{Name: "server", Params: c.P{"34.92.95.215:80", "max_fails=1", "fail_timeout=10s"}},
 			),
 			c.Server(
 				c.Listen443SSLHTTP2,
-				conf.SimpleDirective{Name: "server_name", Params: c.P{"www.application.com"}, Comment: nil},
-				conf.SimpleDirective{Name: "ssl_stapling", Params: c.P{"on"}, Comment: nil},
-				conf.SimpleDirective{Name: "ssl_stapling_verify", Params: c.P{"on"}, Comment: nil},
-				conf.SimpleDirective{Name: "ssl_certificate", Params: c.P{"/path/to/cert"}, Comment: nil},
-				conf.SimpleDirective{Name: "ssl_certificate_key", Params: c.P{"/path/to/key"}, Comment: nil},
-				conf.SimpleDirective{Name: "ssl_protocols", Params: c.P{"TLSv1", "TLSv1.1", "TLSv1.2"}, Comment: nil},
+				conf.SimpleDirective{Name: "server_name", Params: c.P{"www.application.com"}},
+				conf.SimpleDirective{Name: "ssl_stapling", Params: c.P{"on"}},
+				conf.SimpleDirective{Name: "ssl_stapling_verify", Params: c.P{"on"}},
+				conf.SimpleDirective{Name: "ssl_certificate", Params: c.P{"/path/to/cert"}},
+				conf.SimpleDirective{Name: "ssl_certificate_key", Params: c.P{"/path/to/key"}},
+				conf.SimpleDirective{Name: "ssl_protocols", Params: c.P{"TLSv1", "TLSv1.1", "TLSv1.2"}},
 
-				conf.SimpleDirective{Name: "underscores_in_headers", Params: c.P{"on"}, Comment: nil},
+				conf.SimpleDirective{Name: "underscores_in_headers", Params: c.P{"on"}},
 
-				conf.SimpleDirective{Name: "proxy_set_header", Params: c.P{"X-Real-IP", "$remote_addr"}, Comment: nil},
-				conf.SimpleDirective{Name: "proxy_set_header", Params: c.P{"X-Forwarded-For", "$remote_addr"}, Comment: nil},
-				conf.SimpleDirective{Name: "proxy_set_header", Params: c.P{"X-Client-Verify", "SUCCESS"}, Comment: nil},
-				conf.SimpleDirective{Name: "proxy_set_header", Params: c.P{"X-SSL-Subject", "$ssl_client_s_dn"}, Comment: nil},
-				conf.SimpleDirective{Name: "proxy_set_header", Params: c.P{"X-SSL-Issuer", "$ssl_client_i_dn"}, Comment: nil},
+				conf.SimpleDirective{Name: "proxy_set_header", Params: c.P{"X-Real-IP", "$remote_addr"}},
+				conf.SimpleDirective{Name: "proxy_set_header", Params: c.P{"X-Forwarded-For", "$remote_addr"}},
+				conf.SimpleDirective{Name: "proxy_set_header", Params: c.P{"X-Client-Verify", "SUCCESS"}},
+				conf.SimpleDirective{Name: "proxy_set_header", Params: c.P{"X-SSL-Subject", "$ssl_client_s_dn"}},
+				conf.SimpleDirective{Name: "proxy_set_header", Params: c.P{"X-SSL-Issuer", "$ssl_client_i_dn"}},
 
-				conf.SimpleDirective{Name: "proxy_http_version", Params: c.P{"1.1"}, Comment: nil},
-				conf.SimpleDirective{Name: "proxy_connect_timeout", Params: c.P{"10"}, Comment: nil},
+				conf.SimpleDirective{Name: "proxy_http_version", Params: c.P{"1.1"}},
+				conf.SimpleDirective{Name: "proxy_connect_timeout", Params: c.P{"10"}},
 
 				c.If("$http_user_agent ~* \"JianKongBao Monitor\"", conf.SimpleDirective{
-					Name:    "return",
-					Params:  c.P{"200"},
-					Comment: nil,
+					Name:   "return",
+					Params: c.P{"200"},
 				}),
 
-				conf.SimpleDirective{Name: "error_page", Params: c.P{"497", "=307", "https://$host:$server_port$request_uri"}, Comment: nil},
-				conf.SimpleDirective{Name: "error_page", Params: c.P{"400", "414", "406", "@requestErrEvent"}, Comment: nil},
+				conf.SimpleDirective{Name: "error_page", Params: c.P{"497", "=307", "https://$host:$server_port$request_uri"}},
+				conf.SimpleDirective{Name: "error_page", Params: c.P{"400", "414", "406", "@requestErrEvent"}},
 
 				c.Location(c.P{"@requestErrEvent"},
 					conf.SimpleDirective{Name: "root", Params: c.P{"/var/tmp/leadns_errpage"}},
@@ -67,10 +60,7 @@ func TestGenerateL1Conf(t *testing.T) {
 					conf.SimpleDirective{Name: "proxy_cache_purge", Params: c.P{"hqszone", "$host$1$is_args$args"}},
 				),
 
-				conf.SimpleDirective{
-					Name:   "set",
-					Params: c.P{"$origin_str", "34.96.119.139"},
-				},
+				conf.SimpleDirective{Name: "set", Params: c.P{"$origin_str", "34.96.119.139"}},
 
 				c.Location(c.P{"/"},
 					conf.SimpleDirective{Name: "limit_rate", Params: c.P{"68608k"}},
@@ -82,8 +72,8 @@ func TestGenerateL1Conf(t *testing.T) {
 					conf.SimpleDirective{Name: "proxy_pass", Params: c.P{"$scheme://lea_@_www_application_com_443"}},
 				),
 
-				conf.SimpleDirective{Name: "access_log", Params: c.P{"/var/log/nginx/hqs_access_@_www_application_com.log", "json"}, Comment: nil},
-				conf.SimpleDirective{Name: "error_log", Params: c.P{"/var/log/nginx/hqs_error_@_www_application_com.log"}, Comment: nil},
+				conf.SimpleDirective{Name: "access_log", Params: c.P{"/var/log/nginx/hqs_access_@_www_application_com.log", "json"}},
+				conf.SimpleDirective{Name: "error_log", Params: c.P{"/var/log/nginx/hqs_error_@_www_application_com.log"}},
 			),
 		},
 	}
