@@ -1,12 +1,10 @@
-package shortcut
+package go_nginx_conf
 
-import (
-	"fmt"
-	. "go-nginx-conf"
-)
+import "fmt"
+
+type SD = SimpleDirective
 
 type P []string
-type SD SimpleDirective
 
 var (
 	Listen80          = SimpleDirective{Name: "listen", Params: []string{"80"}}

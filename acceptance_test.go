@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	conf "go-nginx-conf"
-	c "go-nginx-conf/shortcut"
 	"io/ioutil"
 	"testing"
 )
@@ -18,62 +17,62 @@ func TestGenerateL1Conf(t *testing.T) {
 
 	config := conf.Config{
 		Directives: conf.Block{
-			c.Upstream("lea_@_www_application_com_443",
-				conf.SimpleDirective{Name: "server", Params: c.P{"35.200.43.88:80", "max_fails=1", "fail_timeout=10s"}},
-				conf.SimpleDirective{Name: "server", Params: c.P{"34.92.95.215:80", "max_fails=1", "fail_timeout=10s"}},
+			conf.Upstream("lea_@_www_application_com_443",
+				conf.SD{Name: "server", Params: conf.P{"35.200.43.88:80", "max_fails=1", "fail_timeout=10s"}},
+				conf.SD{Name: "server", Params: conf.P{"34.92.95.215:80", "max_fails=1", "fail_timeout=10s"}},
 			),
-			c.Server(
-				c.Listen443SSLHTTP2,
-				conf.SimpleDirective{Name: "server_name", Params: c.P{"www.application.com"}},
-				conf.SimpleDirective{Name: "ssl_stapling", Params: c.P{"on"}},
-				conf.SimpleDirective{Name: "ssl_stapling_verify", Params: c.P{"on"}},
-				conf.SimpleDirective{Name: "ssl_certificate", Params: c.P{"/path/to/cert"}},
-				conf.SimpleDirective{Name: "ssl_certificate_key", Params: c.P{"/path/to/key"}},
-				conf.SimpleDirective{Name: "ssl_protocols", Params: c.P{"TLSv1", "TLSv1.1", "TLSv1.2"}},
+			conf.Server(
+				conf.Listen443SSLHTTP2,
+				conf.SD{Name: "server_name", Params: conf.P{"www.application.com"}},
+				conf.SD{Name: "ssl_stapling", Params: conf.P{"on"}},
+				conf.SD{Name: "ssl_stapling_verify", Params: conf.P{"on"}},
+				conf.SD{Name: "ssl_certificate", Params: conf.P{"/path/to/cert"}},
+				conf.SD{Name: "ssl_certificate_key", Params: conf.P{"/path/to/key"}},
+				conf.SD{Name: "ssl_protocols", Params: conf.P{"TLSv1", "TLSv1.1", "TLSv1.2"}},
 
-				conf.SimpleDirective{Name: "underscores_in_headers", Params: c.P{"on"}},
+				conf.SD{Name: "underscores_in_headers", Params: conf.P{"on"}},
 
-				conf.SimpleDirective{Name: "proxy_set_header", Params: c.P{"X-Real-IP", "$remote_addr"}},
-				conf.SimpleDirective{Name: "proxy_set_header", Params: c.P{"X-Forwarded-For", "$remote_addr"}},
-				conf.SimpleDirective{Name: "proxy_set_header", Params: c.P{"X-Client-Verify", "SUCCESS"}},
-				conf.SimpleDirective{Name: "proxy_set_header", Params: c.P{"X-SSL-Subject", "$ssl_client_s_dn"}},
-				conf.SimpleDirective{Name: "proxy_set_header", Params: c.P{"X-SSL-Issuer", "$ssl_client_i_dn"}},
+				conf.SD{Name: "proxy_set_header", Params: conf.P{"X-Real-IP", "$remote_addr"}},
+				conf.SD{Name: "proxy_set_header", Params: conf.P{"X-Forwarded-For", "$remote_addr"}},
+				conf.SD{Name: "proxy_set_header", Params: conf.P{"X-Client-Verify", "SUCCESS"}},
+				conf.SD{Name: "proxy_set_header", Params: conf.P{"X-SSL-Subject", "$ssl_client_s_dn"}},
+				conf.SD{Name: "proxy_set_header", Params: conf.P{"X-SSL-Issuer", "$ssl_client_i_dn"}},
 
-				conf.SimpleDirective{Name: "proxy_http_version", Params: c.P{"1.1"}},
-				conf.SimpleDirective{Name: "proxy_connect_timeout", Params: c.P{"10"}},
+				conf.SD{Name: "proxy_http_version", Params: conf.P{"1.1"}},
+				conf.SD{Name: "proxy_connect_timeout", Params: conf.P{"10"}},
 
-				c.If("$http_user_agent ~* \"JianKongBao Monitor\"", conf.SimpleDirective{
+				conf.If("$http_user_agent ~* \"JianKongBao Monitor\"", conf.SD{
 					Name:   "return",
-					Params: c.P{"200"},
+					Params: conf.P{"200"},
 				}),
 
-				conf.SimpleDirective{Name: "error_page", Params: c.P{"497", "=307", "https://$host:$server_port$request_uri"}},
-				conf.SimpleDirective{Name: "error_page", Params: c.P{"400", "414", "406", "@requestErrEvent"}},
+				conf.SD{Name: "error_page", Params: conf.P{"497", "=307", "https://$host:$server_port$request_uri"}},
+				conf.SD{Name: "error_page", Params: conf.P{"400", "414", "406", "@requestErrEvent"}},
 
-				c.Location(c.P{"@requestErrEvent"},
-					conf.SimpleDirective{Name: "root", Params: c.P{"/var/tmp/leadns_errpage"}},
-					conf.SimpleDirective{Name: "ssi", Params: c.P{"on"}},
-					conf.SimpleDirective{Name: "internal", Params: nil},
-					conf.SimpleDirective{Name: "try_files", Params: c.P{"$uri", "/custom_error.html", "400"}},
+				conf.Location(conf.P{"@requestErrEvent"},
+					conf.SD{Name: "root", Params: conf.P{"/var/tmp/leadns_errpage"}},
+					conf.SD{Name: "ssi", Params: conf.P{"on"}},
+					conf.SD{Name: "internal", Params: nil},
+					conf.SD{Name: "try_files", Params: conf.P{"$uri", "/custom_error.html", "400"}},
 				),
-				c.Location(c.P{"~", "/purge(/.*)"},
-					conf.SimpleDirective{Name: "proxy_cache_purge", Params: c.P{"hqszone", "$host$1$is_args$args"}},
-				),
-
-				conf.SimpleDirective{Name: "set", Params: c.P{"$origin_str", "34.96.119.139"}},
-
-				c.Location(c.P{"/"},
-					conf.SimpleDirective{Name: "limit_rate", Params: c.P{"68608k"}},
-					conf.SimpleDirective{Name: "proxy_cache_bypass", Params: c.P{"$nocache"}},
-					conf.SimpleDirective{Name: "proxy_no_cache", Params: c.P{"$nocache"}},
-					conf.SimpleDirective{Name: "proxy_cache", Params: c.P{"hqszone"}},
-					conf.SimpleDirective{Name: "proxy_cache_valid", Params: c.P{"301", "302", "0s"}},
-					conf.SimpleDirective{Name: "proxy_cache_key", Params: c.P{"$host$uri$is_args$args$origin_str"}},
-					conf.SimpleDirective{Name: "proxy_pass", Params: c.P{"$scheme://lea_@_www_application_com_443"}},
+				conf.Location(conf.P{"~", "/purge(/.*)"},
+					conf.SD{Name: "proxy_cache_purge", Params: conf.P{"hqszone", "$host$1$is_args$args"}},
 				),
 
-				conf.SimpleDirective{Name: "access_log", Params: c.P{"/var/log/nginx/hqs_access_@_www_application_com.log", "json"}},
-				conf.SimpleDirective{Name: "error_log", Params: c.P{"/var/log/nginx/hqs_error_@_www_application_com.log"}},
+				conf.SD{Name: "set", Params: conf.P{"$origin_str", "34.96.119.139"}},
+
+				conf.Location(conf.P{"/"},
+					conf.SD{Name: "limit_rate", Params: conf.P{"68608k"}},
+					conf.SD{Name: "proxy_cache_bypass", Params: conf.P{"$nocache"}},
+					conf.SD{Name: "proxy_no_cache", Params: conf.P{"$nocache"}},
+					conf.SD{Name: "proxy_cache", Params: conf.P{"hqszone"}},
+					conf.SD{Name: "proxy_cache_valid", Params: conf.P{"301", "302", "0s"}},
+					conf.SD{Name: "proxy_cache_key", Params: conf.P{"$host$uri$is_args$args$origin_str"}},
+					conf.SD{Name: "proxy_pass", Params: conf.P{"$scheme://lea_@_www_application_com_443"}},
+				),
+
+				conf.SD{Name: "access_log", Params: conf.P{"/var/log/nginx/hqs_access_@_www_application_com.log", "json"}},
+				conf.SD{Name: "error_log", Params: conf.P{"/var/log/nginx/hqs_error_@_www_application_com.log"}},
 			),
 		},
 	}
@@ -95,7 +94,7 @@ func TestGenerateSimpleDirective(t *testing.T) {
 			name: "listen 80",
 			input: conf.SimpleDirective{
 				Name:   "listen",
-				Params: c.P{"80"},
+				Params: conf.P{"80"},
 			},
 			output: []byte("listen 80;"),
 		},
@@ -103,7 +102,7 @@ func TestGenerateSimpleDirective(t *testing.T) {
 			name: "custom error page",
 			input: conf.SimpleDirective{
 				Name:   "error_page",
-				Params: c.P{"497", "=307", "https://$host:$server_port$request_uri"},
+				Params: conf.P{"497", "=307", "https://$host:$server_port$request_uri"},
 			},
 			output: []byte("error_page 497 =307 https://$host:$server_port$request_uri;"),
 		},
@@ -111,7 +110,7 @@ func TestGenerateSimpleDirective(t *testing.T) {
 			name: "set variable",
 			input: conf.SimpleDirective{
 				Name:   "set",
-				Params: c.P{"$origin_str", "34.96.119.139"},
+				Params: conf.P{"$origin_str", "34.96.119.139"},
 			},
 			output: []byte("set $origin_str 34.96.119.139;"),
 		},
@@ -140,14 +139,14 @@ func TestGenerateUpstream(t *testing.T) {
 
 	config := conf.Config{
 		Directives: conf.Block{
-			c.Upstream("lea_@_www_application_com_443",
+			conf.Upstream("lea_@_www_application_com_443",
 				conf.SimpleDirective{
 					Name:   "server",
-					Params: c.P{"35.200.43.88:80", "max_fails=1", "fail_timeout=10s"},
+					Params: conf.P{"35.200.43.88:80", "max_fails=1", "fail_timeout=10s"},
 				},
 				conf.SimpleDirective{
 					Name:   "server",
-					Params: c.P{"34.92.95.215:80", "max_fails=1", "fail_timeout=10s"},
+					Params: conf.P{"34.92.95.215:80", "max_fails=1", "fail_timeout=10s"},
 				},
 			)},
 	}
@@ -164,11 +163,11 @@ func TestGenerateIfDirective(t *testing.T) {
 
 	config := conf.Config{
 		Directives: conf.Block{
-			c.If(
+			conf.If(
 				"$host = 'www.application.com'",
 				conf.SimpleDirective{
 					Name:   "return",
-					Params: c.P{"301", "https://$host$request_uri"},
+					Params: conf.P{"301", "https://$host$request_uri"},
 				},
 			),
 		},
@@ -186,10 +185,10 @@ func TestGenerateLocationDirective(t *testing.T) {
 
 	config := conf.Config{
 		Directives: conf.Block{
-			c.Location(
-				c.P{"~ /purge(/.*)"},
+			conf.Location(
+				conf.P{"~ /purge(/.*)"},
 				conf.SimpleDirective{
-					Name: "proxy_cache_purge", Params: c.P{"hqszone", "$host$1$is_args$args"},
+					Name: "proxy_cache_purge", Params: conf.P{"hqszone", "$host$1$is_args$args"},
 				},
 			),
 		},
