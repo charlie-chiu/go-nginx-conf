@@ -67,7 +67,7 @@ func TestUpstream(t *testing.T) {
 				Name:   "upstream",
 				Params: []string{"dummy_upstream"},
 				Block: []Directive{
-					SD{Name: "least_conn"},
+					SimpleDirective{Name: "least_conn"},
 				},
 			},
 		},

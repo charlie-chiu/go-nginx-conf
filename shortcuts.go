@@ -1,8 +1,8 @@
 package go_nginx_conf
 
-import "fmt"
-
-type SD = SimpleDirective
+import (
+	"fmt"
+)
 
 type P []string
 
@@ -10,6 +10,14 @@ var (
 	Listen80          = SimpleDirective{Name: "listen", Params: []string{"80"}}
 	Listen443SSLHTTP2 = SimpleDirective{Name: "listen", Params: []string{"443", "ssl", "http2"}}
 )
+
+func SD(name string, params, comment []string) SimpleDirective {
+	return SimpleDirective{
+		Name:    name,
+		Params:  params,
+		Comment: comment,
+	}
+}
 
 func Upstream(upstream string, servers ...SimpleDirective) BlockDirective {
 	ups := make(Block, len(servers))
