@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"fmt"
 	c "go-nginx-conf"
-	"io/ioutil"
+	"os"
 	"testing"
 )
 
 func TestGenerateL1Conf(t *testing.T) {
 	testFixture := "test-fixture/application.l1.conf"
-	expected, err := ioutil.ReadFile(testFixture)
+	expected, err := os.ReadFile(testFixture)
 	if err != nil {
 		t.Fatalf("failed to read test fixture %q, %v", testFixture, err)
 	}
