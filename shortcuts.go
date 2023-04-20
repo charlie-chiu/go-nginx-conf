@@ -11,7 +11,8 @@ var (
 	Listen443SSLHTTP2 = SimpleDirective{Name: "listen", Params: []string{"443", "ssl", "http2"}}
 )
 
-func SD(name string, params, comment []string) SimpleDirective {
+// D is stand for simple directive
+func D(name string, params, comment []string) SimpleDirective {
 	return SimpleDirective{
 		Name:    name,
 		Params:  params,
@@ -41,6 +42,13 @@ func Upstream(upstream string, servers ...SimpleDirective) BlockDirective {
 	}
 }
 
+func UpstreamServer(params []string) SimpleDirective {
+	return SimpleDirective{
+		Name:   "server",
+		Params: params,
+	}
+}
+
 func Server(directives ...Directive) BlockDirective {
 	return BlockDirective{
 		Name:  "server",
@@ -61,5 +69,19 @@ func If(condition string, directives ...Directive) BlockDirective {
 		Name:   "if",
 		Params: []string{fmt.Sprintf("(%s)", condition)},
 		Block:  directives,
+	}
+}
+
+func ProxySetHeader(params []string) SimpleDirective {
+	return SimpleDirective{
+		Name:   "proxy_set_header",
+		Params: params,
+	}
+}
+
+func Return(params []string) SimpleDirective {
+	return SimpleDirective{
+		Name:   "return",
+		Params: params,
 	}
 }
