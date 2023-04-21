@@ -3,7 +3,7 @@ package go_nginx_conf_test
 import (
 	"bytes"
 	"fmt"
-	c "go-nginx-conf"
+	c "github.com/charlie-chiu/go-nginx-conf"
 	"os"
 	"testing"
 )
